@@ -1,9 +1,6 @@
 package com.example.androiddevchallenge
 
 import android.os.CountDownTimer
-import android.util.Log
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -40,15 +37,15 @@ class MainViewModel : ViewModel() {
 
     var progress: Float by mutableStateOf(0f)
 
-    var tickTimer: CountDownTimer? = null
+    private var tickTimer: CountDownTimer? = null
 
 
 
     fun formatTime(time: Int): String {
-        if (time < 10) {
-            return "0$time"
+        return if (time < 10) {
+            "0$time"
         } else {
-            return "$time"
+            "$time"
         }
     }
 
@@ -96,11 +93,10 @@ class MainViewModel : ViewModel() {
         } else {
             if (fullTimeArray.size <= 2) {
                 // 计算秒
-                var second = 0
-                if (fullTimeArray.size == 1) {
-                    second = fullTimeArray[0].toInt()
+                val second = if (fullTimeArray.size == 1) {
+                    fullTimeArray[0].toInt()
                 } else {
-                    second = fullTimeArray[0].toInt() * 10 + fullTimeArray[1].toInt()
+                    fullTimeArray[0].toInt() * 10 + fullTimeArray[1].toInt()
                 }
 
                 curSecond = second
@@ -108,8 +104,8 @@ class MainViewModel : ViewModel() {
                 curHour = 0
             } else if (fullTimeArray.size <= 4) {
                 // 计算 分秒
-                var minute = 0
-                var second = 0
+                var minute: Int
+                var second: Int
 
                 if (fullTimeArray.size == 3) {
                     minute = fullTimeArray[0].toInt()
@@ -124,9 +120,9 @@ class MainViewModel : ViewModel() {
                 curHour = 0
             } else if (fullTimeArray.size <= 6) {
                 // 计算时分秒
-                var hour = 0
-                var minute = 0
-                var second = 0
+                var hour: Int
+                var minute: Int
+                var second: Int
                 if (fullTimeArray.size == 5) {
                     hour = fullTimeArray[0].toInt()
                     minute = fullTimeArray[1].toInt() * 10 + fullTimeArray[2].toInt()
@@ -180,14 +176,8 @@ class MainViewModel : ViewModel() {
             override fun onTick(millisUntilFinished: Long) {
                 // 剩余时间需要转换为时分秒
                 mills2HMS(millisUntilFinished)
-//                Log.d("jimbray", "${millisUntilFinished}")
-//                val percent = ((tickTime - millisUntilFinished) / tickTime).toFloat() / 1000f
-//                progress = percent
-//                Log.d("jimbray", "tickTime : ${tickTime/1000} | mulllisUtilFinished : ${millisUntilFinished/1000} | percent : $percent | progress: $progress")
-//                val percentageCompleted = 100 - millisUntilFinished / (tickTime / 100)
                 val percentageCompleted = 100 - millisUntilFinished * 100 / tickTime
                 progress = percentageCompleted / 100f
-                Log.d("jimbray", "${millisUntilFinished / (tickTime / 100)}")
             }
 
             override fun onFinish() {
@@ -222,7 +212,7 @@ class MainViewModel : ViewModel() {
     fun mills2HMS(mills: Long) {
         val totalSecond = mills / 1000
         curSecond = (totalSecond % 60).toInt()
-        var minute = totalSecond / 60
+        val minute = totalSecond / 60
         curMinute = (minute % 60).toInt()
         curHour = (minute / 60).toInt()
     }

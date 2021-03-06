@@ -16,7 +16,6 @@
 package com.example.androiddevchallenge
 
 import android.os.Bundle
-import android.util.Log
 import android.view.MotionEvent
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -268,7 +267,6 @@ fun NumberText(text: String, modifier: Modifier = Modifier) {
     val viewModel: MainViewModel = viewModel()
     Text(text = text, modifier = modifier.pointerInteropFilter { event ->
         if (event.action == MotionEvent.ACTION_DOWN) {
-            Log.d("jimbray", "Down!!!!->${viewModel.curTimeUnit}")
             when (viewModel.curTimeUnit) {
 
                 MainViewModel.TimeUnit.SECOND -> {
