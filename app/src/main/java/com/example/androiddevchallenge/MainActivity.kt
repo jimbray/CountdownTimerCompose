@@ -29,19 +29,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.Icon
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -106,7 +106,7 @@ fun ColorBlock() {
             .padding(32.dp)
             .clip(RoundedCornerShape(8.dp))
     ) {
-        Column(Modifier.fillMaxWidth(),horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             Crossfade(targetState = viewModel.isTicking) { isTicking ->
                 if (!isTicking) {
                     // 没开始
@@ -118,14 +118,9 @@ fun ColorBlock() {
                         color = Color.White,
                         modifier = Modifier.size(320.dp)
                     )
-
                 }
             }
-
         }
-
-
-
     }
 }
 
@@ -135,17 +130,21 @@ fun OperationArea() {
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(horizontal = 48.dp, vertical = 16.dp), horizontalArrangement = Arrangement.Center
+            .padding(horizontal = 48.dp, vertical = 16.dp),
+        horizontalArrangement = Arrangement.Center
     ) {
 
-        Button(onClick = {
-            if (viewModel.isTicking) {
-                // stop
-                viewModel.stopTick()
-            } else {
-                viewModel.startTick()
-            }
-        }, Modifier.clip(RoundedCornerShape(8.dp))) {
+        Button(
+            onClick = {
+                if (viewModel.isTicking) {
+                    // stop
+                    viewModel.stopTick()
+                } else {
+                    viewModel.startTick()
+                }
+            },
+            Modifier.clip(RoundedCornerShape(8.dp))
+        ) {
             Text(text = if (viewModel.isTicking) "Stop" else "Start")
         }
     }
@@ -165,9 +164,7 @@ fun SettingArea() {
         AnimatedVisibility(!viewModel.isTicking) {
             NumberArea()
         }
-
     }
-
 }
 
 @Composable
@@ -236,7 +233,6 @@ fun NumberArea() {
                                     viewModel.fullTimeArray.removeAt(viewModel.fullTimeArray.size - 1)
                                     viewModel.updateFullTimeArray()
                                 }
-
                             }
 
                             MainViewModel.TimeUnit.HOUR -> {
@@ -269,7 +265,6 @@ fun NumberArea() {
                                 }
                             }
                         }
-
                     }
             )
         }
@@ -279,54 +274,57 @@ fun NumberArea() {
 @Composable
 fun NumberText(text: String, modifier: Modifier = Modifier) {
     val viewModel: MainViewModel = viewModel()
-    Text(text = text, modifier = modifier.pointerInteropFilter { event ->
-        if (event.action == MotionEvent.ACTION_DOWN) {
-            when (viewModel.curTimeUnit) {
+    Text(
+        text = text,
+        modifier = modifier.pointerInteropFilter { event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                when (viewModel.curTimeUnit) {
 
-                MainViewModel.TimeUnit.SECOND -> {
-                    viewModel.secondArray.let { timeArray ->
-                        if (timeArray.size < 2) {
-                            // 还能继续输入
-                            timeArray.add(text)
-                            viewModel.updateSecondTimeArray()
-                        }
-                    }
-                }
-
-                MainViewModel.TimeUnit.MINUTE -> {
-                    viewModel.minuteArray.let { timeArray ->
-                        if (timeArray.size < 2) {
-                            // 还能继续输入
-                            timeArray.add(text)
-                            viewModel.updateMinuteTimeArray()
-                        }
-                    }
-                }
-
-                MainViewModel.TimeUnit.HOUR -> {
-                    viewModel.hourArray.let { timeArray ->
-                        if (timeArray.size < 2) {
-                            // 还能继续输入
-                            timeArray.add(text)
-                            viewModel.updateHourTimeArray()
-                        }
-                    }
-                }
-
-                MainViewModel.TimeUnit.FULL -> {
-                    viewModel.fullTimeArray.let { timeArray ->
-                        if (timeArray.size < 6) {
-                            // 还能继续输入
-                            timeArray.add(text)
-                            viewModel.updateFullTimeArray()
+                    MainViewModel.TimeUnit.SECOND -> {
+                        viewModel.secondArray.let { timeArray ->
+                            if (timeArray.size < 2) {
+                                // 还能继续输入
+                                timeArray.add(text)
+                                viewModel.updateSecondTimeArray()
+                            }
                         }
                     }
 
+                    MainViewModel.TimeUnit.MINUTE -> {
+                        viewModel.minuteArray.let { timeArray ->
+                            if (timeArray.size < 2) {
+                                // 还能继续输入
+                                timeArray.add(text)
+                                viewModel.updateMinuteTimeArray()
+                            }
+                        }
+                    }
+
+                    MainViewModel.TimeUnit.HOUR -> {
+                        viewModel.hourArray.let { timeArray ->
+                            if (timeArray.size < 2) {
+                                // 还能继续输入
+                                timeArray.add(text)
+                                viewModel.updateHourTimeArray()
+                            }
+                        }
+                    }
+
+                    MainViewModel.TimeUnit.FULL -> {
+                        viewModel.fullTimeArray.let { timeArray ->
+                            if (timeArray.size < 6) {
+                                // 还能继续输入
+                                timeArray.add(text)
+                                viewModel.updateFullTimeArray()
+                            }
+                        }
+                    }
                 }
             }
-        }
-        true
-    }, fontSize = 32.sp, color = Color.Black, textAlign = TextAlign.Center)
+            true
+        },
+        fontSize = 32.sp, color = Color.Black, textAlign = TextAlign.Center
+    )
 }
 
 @Composable
@@ -340,7 +338,8 @@ fun TimeArea(hour: Int, minute: Int, second: Int) {
     ) {
         Column(Modifier.weight(1f)) {
             Text(
-                text = viewModel.formatTime(hour), Modifier.clickable {
+                text = viewModel.formatTime(hour),
+                Modifier.clickable {
                     viewModel.curTimeUnit = MainViewModel.TimeUnit.HOUR
                     if (viewModel.curHour == 0) {
                         viewModel.hourArray.clear()
@@ -363,7 +362,8 @@ fun TimeArea(hour: Int, minute: Int, second: Int) {
         }
 
         Text(
-            text = ":", fontSize = 72.sp, color = Color(0xFFCD1247).convert(
+            text = ":", fontSize = 72.sp,
+            color = Color(0xFFCD1247).convert(
                 ColorSpaces.CieXyz
             )
         )
@@ -392,9 +392,9 @@ fun TimeArea(hour: Int, minute: Int, second: Int) {
             )
         }
 
-
         Text(
-            text = ":", fontSize = 72.sp, color = Color(0xFFCD1247).convert(
+            text = ":", fontSize = 72.sp,
+            color = Color(0xFFCD1247).convert(
                 ColorSpaces.CieXyz
             )
         )
@@ -422,7 +422,6 @@ fun TimeArea(hour: Int, minute: Int, second: Int) {
                 textAlign = TextAlign.Center
             )
         }
-
     }
 }
 
