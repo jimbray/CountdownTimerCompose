@@ -1,13 +1,16 @@
 package com.example.androiddevchallenge
 
+import android.os.CountDownTimer
 import android.util.Log
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlin.math.min
-import kotlin.math.pow
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.schedule
 
 class MainViewModel : ViewModel() {
 
@@ -32,6 +35,13 @@ class MainViewModel : ViewModel() {
     val minuteArray: ArrayList<String> by mutableStateOf(ArrayList())
 
     val secondArray: ArrayList<String> by mutableStateOf(ArrayList())
+
+    var isTicking: Boolean by mutableStateOf(false)
+
+    var progress: Float by mutableStateOf(0f)
+
+    var tickTimer: CountDownTimer? = null
+
 
 
     fun formatTime(time: Int): String {
@@ -136,4 +146,84 @@ class MainViewModel : ViewModel() {
 
     }
 
+    fun startTick() {
+        curTimeUnit = TimeUnit.FULL
+        isTicking = true
+
+        var totalSecond = 0
+        if (curHour != 0) {
+            totalSecond += curHour*60*60
+        }
+
+        if (curMinute != 0) {
+            totalSecond += curMinute*60
+        }
+
+        if (curSecond != 0) {
+            totalSecond += curSecond
+        }
+
+        // millseconds 需要加上1秒的多余时间
+        val tickTime = (totalSecond * 1000).toLong()
+
+        if (curSecond >= 60) {
+            curMinute += curSecond / 60
+            curSecond %= 60
+        }
+
+        if (curMinute >= 60) {
+            curHour += curMinute / 60
+            curMinute %= 60
+        }
+
+        tickTimer = object : CountDownTimer(tickTime, 1) {
+            override fun onTick(millisUntilFinished: Long) {
+                // 剩余时间需要转换为时分秒
+                mills2HMS(millisUntilFinished)
+//                Log.d("jimbray", "${millisUntilFinished}")
+//                val percent = ((tickTime - millisUntilFinished) / tickTime).toFloat() / 1000f
+//                progress = percent
+//                Log.d("jimbray", "tickTime : ${tickTime/1000} | mulllisUtilFinished : ${millisUntilFinished/1000} | percent : $percent | progress: $progress")
+//                val percentageCompleted = 100 - millisUntilFinished / (tickTime / 100)
+                val percentageCompleted = 100 - millisUntilFinished * 100 / tickTime
+                progress = percentageCompleted / 100f
+                Log.d("jimbray", "${millisUntilFinished / (tickTime / 100)}")
+            }
+
+            override fun onFinish() {
+
+                Timer().schedule(1000) {
+                    isTicking = false
+                }
+                progress = 1f
+                curHour = 0
+                curMinute = 0
+                curSecond = 0
+                fullTimeArray.clear()
+                hourArray.clear()
+                minuteArray.clear()
+                secondArray.clear()
+            }
+
+        }
+
+        progress = 0f
+
+        tickTimer?.start()
+    }
+
+
+    fun stopTick() {
+        isTicking = false
+        progress = 0f
+        tickTimer?.cancel()
+    }
+
+    fun mills2HMS(mills: Long) {
+        val totalSecond = mills / 1000
+        curSecond = (totalSecond % 60).toInt()
+        var minute = totalSecond / 60
+        curMinute = (minute % 60).toInt()
+        curHour = (minute / 60).toInt()
+    }
 }
