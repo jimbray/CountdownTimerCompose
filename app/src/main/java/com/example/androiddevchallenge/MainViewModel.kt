@@ -5,7 +5,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import java.util.*
+import java.util.Timer
 import kotlin.collections.ArrayList
 import kotlin.concurrent.schedule
 
